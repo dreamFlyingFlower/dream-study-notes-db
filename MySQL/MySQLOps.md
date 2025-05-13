@@ -1395,8 +1395,9 @@ systemctl restart crontab # 重启定时任务
   server-id=1
   # 配置文件中开启主从复制,指定bin-log名称,会自动添加索引,如mysql-bin.000001
   log-bin = mysql-bin
-  # 配置文件指定同步的数据库,如果不指定则同步全部数据库.多个用逗号隔开或写多行
+  # 配置文件指定同步的数据库,如果不指定则同步全部数据库.多个用写多行
   binlog-do-db=my_test
+  binlog-do-db=my_test1
   # 不需要同步的数据库
   binlog-ignore-db=information_schema
   binlog-ignore-db=mysql
@@ -1445,11 +1446,11 @@ systemctl restart crontab # 重启定时任务
 
   ```mysql
   # 主库锁表,防止数据变化
-  FLUSH TABLE WITH READ LOCK;
+  FLUSH TABLES WITH READ LOCK;
   # 查看master上bin-log相关信息,在从库相关SQL操作中需要使用
   SHOW MASTER STATUS\G
-  ## File:此时正在使用的二进制文件名
-  ## Position:此时正在File文件的那个位置
+  ## File:此时正在使用的二进制文件名,从库需要使用
+  ## Position:此时正在File文件的那个位置,从库需要使用
   ## Binlog_Do_DB:需要复制的数据库,为null表示所有数据库都复制
   ## Binlog_Ignore_DB:需要忽略的数据库
   ```
@@ -1472,7 +1473,7 @@ systemctl restart crontab # 重启定时任务
   START SLAVE;
   # 停止主从
   # STOP SLAVE;
-  # 查看同步状态,若输出的结果中不报错,且Slave_IO_Running和Slave_SLQ_Running都为yes时,表示主从正常
+  # 查看同步状态,若输出的结果中不报错,且Slave_IO_Running和Slave_SLQ_Running都为yes时,表示主从正常.如果有No,查看log_error日志
   SHOW SLAVE STATUS\G
   ```
 
